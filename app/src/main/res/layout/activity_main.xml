@@ -61,7 +61,7 @@
             android:layout_height="wrap_content" app:layout_constraintGuide_begin="-219dp"
             android:id="@+id/Guideline0.9" app:layout_constraintGuide_percent="0.9"/>
     <TextView
-            android:text="Made by:\nWojciech Olejarz\ns15954"
+            android:text="Autor:\nWojciech Olejarz\ns15954"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/Autorhehe" android:textAlignment="center"

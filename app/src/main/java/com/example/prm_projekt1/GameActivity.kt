@@ -9,23 +9,23 @@ import android.widget.TableRow
 import kotlinx.android.synthetic.main.activity_game.*
 
 class GameActivity() : AppCompatActivity() {
-    var rows = 0
-    var columns = 0
+
     val tableLayout by lazy { TableLayout(this) }
 
 
-    constructor(rows: Int, columns: Int) : this() {
-        this.rows = rows
-        this.columns = columns
-    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
-
+        tableLayout.apply {
+            layoutParams = TableLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            isShrinkAllColumns = true
+        }
+        var rows = intent.getIntExtra("rows", 5)
+        var columns = intent.getIntExtra("columns", 5)
         createTable(rows, columns)
     }
 
-    fun createTable(rows: Int, cols: Int) {
+    private fun createTable(rows: Int, cols: Int) {
 
         for (i in 0 until rows) {
 

@@ -14,7 +14,10 @@ class MainActivity : AppCompatActivity() {
             buttonBox.getChildAt(i).apply {
                 setOnClickListener{
                     var gridSize = 4 + i*2
-                startActivity( Intent(this@MainActivity, GameActivity(gridSize,gridSize)::class.java))
+                    var intent = Intent(this@MainActivity, GameActivity::class.java)
+                    intent.putExtra("rows", gridSize)
+                    intent.putExtra("columns", gridSize)
+                startActivity( intent)
                 }
             }
         }
