@@ -9,7 +9,7 @@
 
     <TextView
             android:layout_width="wrap_content"
-            android:layout_height="66dp"
+            android:layout_height="wrap_content"
             android:text="Memory game\nWybierz wielkość planszy:"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
@@ -22,8 +22,8 @@
             app:layout_constraintBottom_toTopOf="@+id/guideline" android:layout_marginTop="8dp"/>
     <LinearLayout
             android:orientation="vertical"
-            android:layout_width="263dp"
-            android:layout_height="146dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
             app:layout_constraintStart_toStartOf="@+id/Guideline0.1" android:layout_marginStart="8dp"
             android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="@+id/guideline"
