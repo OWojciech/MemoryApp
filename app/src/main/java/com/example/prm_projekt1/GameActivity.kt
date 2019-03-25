@@ -7,12 +7,14 @@ import android.widget.Button
 import android.widget.TableLayout
 import android.widget.TableRow
 import kotlinx.android.synthetic.main.activity_game.*
+import kotlin.concurrent.thread
 
-class GameActivity() : AppCompatActivity() {
+class GameActivity : AppCompatActivity() {
 
-    val tableLayout by lazy { TableLayout(this) }
-    val memoryTable by lazy { ArrayList<Char>()}
-    var clickCount: Int = 0
+    private val tableLayout by lazy { TableLayout(this) }
+    private val memoryTable by lazy { ArrayList<Char>()}
+    private val savedLetters by lazy { ArrayList<Button>() }
+    private var clickCount: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,16 +23,15 @@ class GameActivity() : AppCompatActivity() {
             layoutParams = TableLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
             isShrinkAllColumns = true
         }
-        var rows = intent.getIntExtra("rows", 5)
-        var columns = intent.getIntExtra("columns", 5)
+        val rows = intent.getIntExtra("rows", 5)
+        val columns = intent.getIntExtra("columns", 5)
         initMemTable()
         shuffleTable(rows*columns)
         createTable(rows, columns)
-
     }
     private fun initMemTable(){
         var ascii = 97
-        var tmp = 20
+        var tmp = 8
         while(tmp > 0){
             memoryTable.add(ascii.toChar())
             memoryTable.add(ascii.toChar())
@@ -44,12 +45,13 @@ class GameActivity() : AppCompatActivity() {
         while(tmp > 0){
             val i = Math.floor(Math.random() * memoryTable.size)
             val j = Math.floor(Math.random() * memoryTable.size)
-            var temp = memoryTable.get(j.toInt())
-            memoryTable.set(j.toInt(), memoryTable.get(i.toInt()))
-            memoryTable.set(i.toInt(), temp)
+            val temp = memoryTable[j.toInt()]
+            memoryTable[j.toInt()] = memoryTable[i.toInt()]
+            memoryTable[i.toInt()] = temp
             tmp--
         }
     }
+
     private fun createTable(rows: Int, cols: Int) {
 
         for (i in 0 until rows) {
@@ -62,8 +64,26 @@ class GameActivity() : AppCompatActivity() {
                 row.addView(Button(this).apply {
                     layoutParams = TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.WRAP_CONTENT)
+
                     setOnClickListener{
-                        text = memoryTable.get((i*cols +j)%memoryTable.size).toString()
+                        clickCount += 1
+                        text = memoryTable[((i*cols +j)%memoryTable.size)].toString()
+                        savedLetters.add(this)
+                        thread {
+                            runOnUiThread {
+                                if (clickCount == 2 && (savedLetters[0].text != savedLetters[1].text || savedLetters[0] == savedLetters[1])
+                                ) {
+                                    Thread.sleep(1000)
+                                    savedLetters[0].text = null
+                                    savedLetters[1].text = null
+                                    savedLetters.clear()
+                                    clickCount = 0
+                                } else if (clickCount == 2 && savedLetters[0].text == savedLetters[1].text) {
+                                    savedLetters.clear()
+                                    clickCount = 0
+                                }
+                            }
+                        }
                     }
                 })
             }
