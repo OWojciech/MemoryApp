@@ -2,41 +2,46 @@ package com.example.prm_projekt1
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.TableLayout
 import android.widget.TableRow
 import kotlinx.android.synthetic.main.activity_game.*
 import kotlin.concurrent.thread
 
 class GameActivity : AppCompatActivity() {
 
-    private val tableLayout by lazy { TableLayout(this) }
+    //private val tableLayout by lazy { TableLayout(this) }
     private val memoryTable by lazy { ArrayList<Char>()}
     private val savedLetters by lazy { ArrayList<Button>() }
-    private var clickCount: Int = 0
-
+    private var tableSize: Int = 0
+    private var sum: Int = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
+        tableLayout
         tableLayout.apply {
-            layoutParams = TableLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            //layoutParams = TableLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
             isShrinkAllColumns = true
+
         }
+
         val rows = intent.getIntExtra("rows", 5)
         val columns = intent.getIntExtra("columns", 5)
-        initMemTable()
-        shuffleTable(rows*columns)
+        tableSize = rows*columns
+        initMemTable(tableSize)
+        shuffleTable(tableSize)
         createTable(rows, columns)
     }
-    private fun initMemTable(){
+    private fun initMemTable(size: Int){
         var ascii = 97
-        var tmp = 8
-        while(tmp > 0){
+        while(memoryTable.size < size){
             memoryTable.add(ascii.toChar())
             memoryTable.add(ascii.toChar())
             ascii++
-            tmp--
+            if(ascii == 113){
+                ascii = 97
+            }
         }
     }
 
@@ -66,21 +71,23 @@ class GameActivity : AppCompatActivity() {
                         TableRow.LayoutParams.WRAP_CONTENT)
 
                     setOnClickListener{
-                        clickCount += 1
                         text = memoryTable[((i*cols +j)%memoryTable.size)].toString()
                         savedLetters.add(this)
                         thread {
                             runOnUiThread {
-                                if (clickCount == 2 && (savedLetters[0].text != savedLetters[1].text || savedLetters[0] == savedLetters[1])
+                                if (savedLetters.size == 2 && (savedLetters[0].text != savedLetters[1].text || savedLetters[0] == savedLetters[1])
                                 ) {
                                     Thread.sleep(1000)
                                     savedLetters[0].text = null
                                     savedLetters[1].text = null
                                     savedLetters.clear()
-                                    clickCount = 0
-                                } else if (clickCount == 2 && savedLetters[0].text == savedLetters[1].text) {
+
+                                } else if (savedLetters.size == 2 && savedLetters[0].text == savedLetters[1].text) {
+                                    sum += 2
+                                    if(sum == tableSize){
+                                        winner.visibility = View.VISIBLE
+                                    }
                                     savedLetters.clear()
-                                    clickCount = 0
                                 }
                             }
                         }
@@ -89,6 +96,6 @@ class GameActivity : AppCompatActivity() {
             }
             tableLayout.addView(row)
         }
-        gameLayout.addView(tableLayout)
+        //gameLayout.addView(tableLayout)
     }
 }
