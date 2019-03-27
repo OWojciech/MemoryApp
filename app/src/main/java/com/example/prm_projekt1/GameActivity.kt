@@ -7,15 +7,16 @@ import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TableRow
 import kotlinx.android.synthetic.main.activity_game.*
 import kotlin.concurrent.thread
 
 class GameActivity : AppCompatActivity() {
 
-    private val memoryTable by lazy { ArrayList<Char>() }
-    private val savedLetters by lazy { ArrayList<Button>() }
-    private val buttonList by lazy { ArrayList<Button>() }
+    private val memoryTable by lazy { ArrayList<Int>() }
+    private val savedLetters by lazy { ArrayList<ImageButton>() }
+    private val buttonList by lazy { ArrayList<ImageButton>() }
     private var tableSize: Int = 0
     private var sum: Int = 0
     private var rows: Int = 0
@@ -24,6 +25,8 @@ class GameActivity : AppCompatActivity() {
     private var minutes: Int = 0
     private var seconds: Int = 0
     private val handler by lazy { Handler() }
+    private val myImageLibrary = MyImageLibrary()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
@@ -64,13 +67,13 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun initMemTable(size: Int) {
-        var ascii = 97
+        var ascii = 0
         while (memoryTable.size < size) {
-            memoryTable.add(ascii.toChar())
-            memoryTable.add(ascii.toChar())
+            memoryTable.add(myImageLibrary.getValue(ascii)!!)
+            memoryTable.add(myImageLibrary.getValue(ascii)!!)
             ascii++
-            if (ascii == 109) {//113
-                ascii = 97
+            if (ascii == 12) {//113
+                ascii = 0
             }
         }
     }
@@ -110,13 +113,16 @@ class GameActivity : AppCompatActivity() {
             )
 
             for (j in 0 until cols) {
-                row.addView(Button(this).apply {
+                row.addView(ImageButton(this).apply {
+                    setImageResource(memoryTable[((i * cols + j) % memoryTable.size)])
+                    imageAlpha = 0
+                    tag = memoryTable[((i * cols + j) % memoryTable.size)]
                     layoutParams = TableRow.LayoutParams(
                         TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.WRAP_CONTENT
                     )
                     setOnClickListener {
-                        text = memoryTable[((i * cols + j) % memoryTable.size)].toString()
+                        imageAlpha = 255
                         savedLetters.add(this)
                         thread {
                             runOnUiThread {
@@ -135,15 +141,15 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun checkButtons() {
-        if (savedLetters.size == 2 && (savedLetters[0].text != savedLetters[1].text || savedLetters[0] == savedLetters[1])
+        if (savedLetters.size == 2 && (savedLetters[0].tag != savedLetters[1].tag || savedLetters[0] == savedLetters[1])
         ) {
             for(e in buttonList){
                 e.isClickable = false
             }
             Handler().postDelayed({
 
-                savedLetters[0].text = null
-                savedLetters[1].text = null
+                savedLetters[0].imageAlpha = 0
+                savedLetters[1].imageAlpha = 0
                 savedLetters.clear()
 
                 for(e in buttonList){
@@ -152,9 +158,11 @@ class GameActivity : AppCompatActivity() {
             }, 1000)
 
 
-        } else if (savedLetters.size == 2 && savedLetters[0].text == savedLetters[1].text) {
+        } else if (savedLetters.size == 2 && savedLetters[0].tag == savedLetters[1].tag) {
             savedLetters[0].isEnabled = false
             savedLetters[1].isEnabled = false
+            savedLetters[0].imageAlpha = 140
+            savedLetters[1].imageAlpha = 140
             sum += 2
             if (sum == tableSize) {
                 stopTimer()
