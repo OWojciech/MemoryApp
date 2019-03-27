@@ -69,7 +69,7 @@ class GameActivity : AppCompatActivity() {
             memoryTable.add(ascii.toChar())
             memoryTable.add(ascii.toChar())
             ascii++
-            if (ascii == 113) {
+            if (ascii == 109) {//113
                 ascii = 97
             }
         }
