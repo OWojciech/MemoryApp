@@ -19,7 +19,7 @@ class MyImageLibrary{
         list.add(R.drawable.m)
     }
 
-    public fun getValue(index: Int): Int? {
+    fun getValue(index: Int): Int? {
         return list[index]
     }
 }

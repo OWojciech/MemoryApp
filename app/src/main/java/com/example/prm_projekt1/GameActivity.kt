@@ -6,7 +6,6 @@ import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.TableRow
 import kotlinx.android.synthetic.main.activity_game.*
@@ -30,11 +29,7 @@ class GameActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_game)
-        tableLayout
-        tableLayout.apply {
-            isShrinkAllColumns = true
-
-        }
+        tableLayout.apply { isShrinkAllColumns = true }
         functionButtons()
 
         rows = intent.getIntExtra("rows", 5)
@@ -67,26 +62,22 @@ class GameActivity : AppCompatActivity() {
     }
 
     private fun initMemTable(size: Int) {
-        var ascii = 0
+        var index = 0
         while (memoryTable.size < size) {
-            memoryTable.add(myImageLibrary.getValue(ascii)!!)
-            memoryTable.add(myImageLibrary.getValue(ascii)!!)
-            ascii++
-            if (ascii == 12) {//113
-                ascii = 0
-            }
+            memoryTable.add(myImageLibrary.getValue(index)!!)
+            memoryTable.add(myImageLibrary.getValue(index)!!)
+            index++
+            index = if(index == 12) 0 else index
         }
     }
 
     private fun shuffleTable(count: Int) {
-        var tmp = count
-        while (tmp > 0) {
+        for(e in 0 until count){
             val i = Math.floor(Math.random() * memoryTable.size)
             val j = Math.floor(Math.random() * memoryTable.size)
-            val temp = memoryTable[j.toInt()]
+            val tmp = memoryTable[j.toInt()]
             memoryTable[j.toInt()] = memoryTable[i.toInt()]
-            memoryTable[i.toInt()] = temp
-            tmp--
+            memoryTable[i.toInt()] = tmp
         }
     }
 
@@ -114,9 +105,9 @@ class GameActivity : AppCompatActivity() {
 
             for (j in 0 until cols) {
                 row.addView(ImageButton(this).apply {
+                    tag = memoryTable[((i * cols + j) % memoryTable.size)]
                     setImageResource(memoryTable[((i * cols + j) % memoryTable.size)])
                     imageAlpha = 0
-                    tag = memoryTable[((i * cols + j) % memoryTable.size)]
                     layoutParams = TableRow.LayoutParams(
                         TableRow.LayoutParams.WRAP_CONTENT,
                         TableRow.LayoutParams.WRAP_CONTENT
@@ -130,7 +121,6 @@ class GameActivity : AppCompatActivity() {
                             }
                         }
                     }
-
                     buttonList.add(this)
                 })
             }
