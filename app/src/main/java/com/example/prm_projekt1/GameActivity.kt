@@ -15,6 +15,7 @@ class GameActivity : AppCompatActivity() {
 
     private val memoryTable by lazy { ArrayList<Char>() }
     private val savedLetters by lazy { ArrayList<Button>() }
+    private val buttonList by lazy { ArrayList<Button>() }
     private var tableSize: Int = 0
     private var sum: Int = 0
     private var rows: Int = 0
@@ -123,6 +124,8 @@ class GameActivity : AppCompatActivity() {
                             }
                         }
                     }
+
+                    buttonList.add(this)
                 })
             }
             tableLayout.addView(row)
@@ -134,11 +137,20 @@ class GameActivity : AppCompatActivity() {
     private fun checkButtons() {
         if (savedLetters.size == 2 && (savedLetters[0].text != savedLetters[1].text || savedLetters[0] == savedLetters[1])
         ) {
+            for(e in buttonList){
+                e.isClickable = false
+            }
             Handler().postDelayed({
+
                 savedLetters[0].text = null
                 savedLetters[1].text = null
                 savedLetters.clear()
+
+                for(e in buttonList){
+                    e.isClickable = true
+                }
             }, 1000)
+
 
         } else if (savedLetters.size == 2 && savedLetters[0].text == savedLetters[1].text) {
             savedLetters[0].isEnabled = false
